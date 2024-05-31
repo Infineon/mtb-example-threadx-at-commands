@@ -1,0 +1,97 @@
+
+AT+XXXXY; CMD_NAME, {"key1":"value1","key2":"value2"};
+•	The prefix for all AT commands is "AT+XXXXY", where XXXX represents the length of the AT command and Y denotes a unique ID for each AT command.( The length of a single-line AT command can be zero. )
+•	An AT command can be classified as a single line command if it does not contain any "\r\n". However, if there are multiple "\r\n" present in the AT command, then it is classified as a multiline AT command.
+•	CMD_NAME is the name given to the AT command, and options for the corresponding AT commands can be provided through key-value pairs.
+•	Every AT command should end with semicolon (;).
+
+example:
+
+AT+00001;WCM_APConnect,{"ssid":"MY_SSID", "password":"", "security-type":"open"};
+
+In the above example, the name of the AT command is "WCM_APConnect", and the prefix for the command is "AT+00001". 
+
+This particular example is a single line AT command and has a unique ID of 1. The options for the command are provided in the form of key-value pairs, and the AT command ends with a semicolon.
+
+##############################################################################################################################################################################################################################
+
+-----------------
+Wi-Fi Commands
+------------------
+
+1. AT+00001;WCM_APConnect,{"ssid":"MY_SSID", "password":"MY_KEY123", "security-type":"open"};
+
+This command is used to connect to a Wi-Fi network with the specified SSID and password. The "security-type" parameter indicates the security type of the network, which in this case is "open".
+
+2. AT+00162;WCM_APDisconnect;
+
+This command disconnects the device from the currently connected Wi-Fi network.
+
+3. AT+00133;WCM_APGetInfo;
+
+This command retrieves information about the currently connected Wi-Fi network such as SSID and signal strength.
+
+4. AT+00344;WCM_GetIPAddress,{"addr-type" : 4};
+
+This command retrieves the IPv4 address of the device.
+
+5. AT+00155;WCM_GetIPV4Info;
+
+This command retrieves detailed information about the IPv4 configuration of the device, including subnet mask and gateway address.
+
+6. AT+00006;WCM_Ping
+
+Initiates a ping to the Gateway IP address to check the network connectivity.
+
+7. AT+00137;WCM_ScanStart;
+
+This command starts scanning for available Wi-Fi networks in the vicinity.
+
+8. AT+00128;WCM_ScanStop;
+
+This command stops an ongoing Wi-Fi network scan.
+
+
+##############################################################################################################################################################################################################################
+
+-----------------
+MQTT Commands
+------------------
+
+
+1. AT+000011;MQTT_DefineBroker,{"brokerid":1,"host":"test.mosquitto.org", "port":1883,"tls":false, "rootca":"", "clientcert":"", "clientkey":"", "clientid":"h1cp-test-client", "cleansession":true, "username":"", "password":"", "lastwilltopic":"1", "lastwillqos":"0", "lastwillmsg":"1", "lastwillretain":false, "keepalive":60, "publishqos":1, "publishretain":1, "publishretrylimit":1, "subscribeqos":2};
+
+This command is used to define an MQTT broker with the specified configuration parameters. It sets up the connection details, client identification, session handling, last will and testament (LWT) settings, and default QoS levels for publishing and subscribing.
+example:-
+AT+490111;MQTT_DefineBroker,{"brokerid":1,"host":"test.mosquitto.org", "port":8883,"tls":true, "rootca":"-----BEGIN CERTIFICATE-----\nMIIEAzCCAuugAwIBAgIUBY1hlCGvdj4NhBXkZ/uLUZNILAwwDQYJKoZIhvcNAQEL\nBQAwgZAxCzAJBgNVBAYTAkdCMRcwFQYDVQQIDA5Vbml0ZWQgS2luZ2RvbTEOMAwG\nA1UEBwwFRGVyYnkxEjAQBgNVBAoMCU1vc3F1aXR0bzELMAkGA1UECwwCQ0ExFjAU\nBgNVBAMMDW1vc3F1aXR0by5vcmcxHzAdBgkqhkiG9w0BCQEWEHJvZ2VyQGF0Y2hv\nby5vcmcwHhcNMjAwNjA5MTEwNjM5WhcNMzAwNjA3MTEwNjM5WjCBkDELMAkGA1UE\nBhMCR0IxFzAVBgNVBAgMDlVuaXRlZCBLaW5nZG9tMQ4wDAYDVQQHDAVEZXJieTES\nMBAGA1UECgwJTW9zcXVpdHRvMQswCQYDVQQLDAJDQTEWMBQGA1UEAwwNbW9zcXVp\ndHRvLm9yZzEfMB0GCSqGSIb3DQEJARYQcm9nZXJAYXRjaG9vLm9yZzCCASIwDQYJ\nKoZIhvcNAQEBBQADggEPADCCAQoCggEBAME0HKmIzfTOwkKLT3THHe+ObdizamPg\nUZmD64Tf3zJdNeYGYn4CEXbyP6fy3tWc8S2boW6dzrH8SdFf9uo320GJA9B7U1FW\nTe3xda/Lm3JFfaHjkWw7jBwcauQZjpGINHapHRlpiCZsquAthOgxW9SgDgYlGzEA\ns06pkEFiMw+qDfLo/sxFKB6vQlFekMeCymjLCbNwPJyqyhFmPWwio/PDMruBTzPH\n3cioBnrJWKXc3OjXdLGFJOfj7pP0j/dr2LH72eSvv3PQQFl90CZPFhrCUcRHSSxo\nE6yjGOdnz7f6PveLIB574kQORwt8e	   Pn0yidrTC1ictikED3nHYhMUOUCAwEAAaNT\nMFEwHQYDVR0OBBYEFPVV6xBUFPiGKDyo5V3+Hbh4N9YSMB8GA1UdIwQYMBaAFPVV\n6xBUFPiGKDyo5V3+Hbh4N9YSMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL\nBQADggEBAGa9kS21N70ThM6/Hj9D7mbVxKLBjVWe2TPsGfbl3rEDfZ+OKRZ2j6AC\n6r7jb4TZO3dzF2p6dgbrlU71Y/4K0TdzIjRj3cQ3KSm41JvUQ0hZ/c04iGDg/xWf\n+pp58nfPAYwuerruPNWmlStWAXf0UTqRtg4hQDWBuUFDJTuWuuBvEXudz74eh/wK\nsMwfu1HFvjy5Z0iMDU8PUDepjVolOCue9ashlS4EB5IECdSR2TItnAIiIwimx839\nLdUdRudafMu5T5Xma182OC0/u/xRlEm+tvKGGmfFcN0piqVl8OrSPBgIlb+1IKJE\nm/XriWr/Cq4h/JfB7NTsezVslgkBaoU=\n-----END CERTIFICATE-----\n", "clientcert":"-----BEGIN CERTIFICATE-----\nMIIDnjCCAoagAwIBAgIBADANBgkqhkiG9w0BAQsFADCBkDELMAkGA1UEBhMCR0Ix\nFzAVBgNVBAgMDlVuaXRlZCBLaW5nZG9tMQ4wDAYDVQQHDAVEZXJieTESMBAGA1UE\nCgwJTW9zcXVpdHRvMQswCQYDVQQLDAJDQTEWMBQGA1UEAwwNbW9zcXVpdHRvLm9y\nZzEfMB0GCSqGSIb3DQEJARYQcm9nZXJAYXRjaG9vLm9yZzAeFw0yMjA1MjQxNzI0\nNTZaFw0yMjA4MjIxNzI0NTZaMHgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxp\nZm9ybmlhMRIwEAYDVQQHDAlTdW5ueXZhbGUxHDAaBgNVBAoME0RlZmF1bHQgQ29t\ncGFueSBMdGQxDTALBgN   VBAMMBG5hbWUxEzARBgkqhkiG9w0BCQEWBG5hbWUwggEi\nMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDB1q2p1HS/yB7WU9MDXDwaNLtC\nxgDHebAjZfsOfjBs3EWW8DnTtYlJ1bvmnCoCNlUdQMdpwWtx7iL71qRCvyxTGIKV\nNKmWy62M7dUSGzP4y2s+S9Rd4NoHsKYA3e6Z1rWNtXVJVwNlDpDRpWcgUD8etAdZ\nzRblcbufCQBcHOgHjgns7tjge2GZpfDc03HFobqXGWAENErjHmJ4bT1Wn78Zx9Wn\nJt7mef2xY7Hwutar0XLCQcZN8OimW/7OAOjjCPX1u2GpN9G+/jCfN7g21HZx3FOr\n8gxG1YJ5G6KgOCyyuN0c+y7Uo4Ps1sYAjG2VqsGs+0wxiBVutz6DE23kNk83AgMB\nAAGjGjAYMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMA0GCSqGSIb3DQEBCwUAA4IB\nAQCwjFmVRuGBf/pU0Ur1wCV8cWv0LKINlItuIMGaYt4qX3mKRxWhRkirN1R4pt0x\nnmF3A9Y/UArvYxzJVp41zz8dVXUHKc8oJ2jTAik8QJsW0e3Zo1BxNR4TGW7bcwU1\nOSPo3k53/E1Ar0w5pw7gMiwsQ6r1ct9s4tuQjJUCD/MMRtur/Wdqurxh1e6dDB5s\nYvrDDk6OF+WYG5GDMhdmARzEGyQKfbsI0I8ZB3oQEZjn0uw5pMqlJn8Zt+gDiyUu\nECqX6j1v5n3KgzNITBW7v0AuNDUowhb2cNlnJTwcE9ZVsDIRQFN2rKkNk14efHOJ\ndoB6qbbxMdJeFVEEB5sSV7a/\n-----END CERTIFICATE-----\n", "clientkey":"-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAwdatqdR0v8ge1lPTA1w8GjS7QsYAx3mwI2X7Dn4wbNxFlvA5\n07WJSdW75pwqAj   ZVHUDHacFrce4i+9akQr8sUxiClTSplsutjO3VEhsz+MtrPkvU\nXeDaB7CmAN3umda1jbV1SVcDZQ6Q0aVnIFA/HrQHWc0W5XG7nwkAXBzoB44J7O7Y\n4HthmaXw3NNxxaG6lxlgBDRK4x5ieG09Vp+/GcfVpybe5nn9sWOx8LrWq9FywkHG\nTfDoplv+zgDo4wj19bthqTfRvv4wnze4NtR2cdxTq/IMRtWCeRuioDgssrjdHPsu\n1KOD7NbGAIxtlarBrPtMMYgVbrc+gxNt5DZPNwIDAQABAoIBAAIFJbwuXaUeBcxA\nBWP0kx/GyujQPXPWvdIwnuQwxnpr9UG0cTXWn36ofpPRrtJlFJAAe9OLU35VeAHd\n48paSbD4AWxipx3OM5nTZLQSmoEORajZi3YLANqxqZk6tuDdjvjSGk3QXVWxSCsX\nKTL6Ax5jy+vQqltrywPGST2sg3KIsMAmfdrN0FkWeNdyM/fpegaI/4B/xQ5+YnNe\nvb/a+aVJethpjmtOJgFhRbANwHUg/fjTD5embvJdDXgq2Zd6kd4sCiJe1ALa2zCD\nbSal7tyZ7RiJQATKNgkP3heYXAkQA+oOEnWWeocEVVd+isq1GGF5Mkx5i4M8NOqJ\nQnT/OIECgYEA+EhIE4myx8iSr9XtsZSoW6pNUk+xvF2eDFqqeO2Dze0IfJ0/Ed0P\njzgJ6UdU5ZB1BwbHPzwh8pZTvgLE92mnCbHAqiNEYhWp0G8ZV4aFOgnyxBsJTAEf\nUJ40vAH6q60ikL6qBXWJYqBKqAeXXjDNP2nQoNj0144BBxrVkmVWUkECgYEAx90o\ndKR+tHcvxD5aicy7LLHxJYHOz6QSKTrss7HtRujbyMZJsPo11zmHHH+g+KXf8Zxb\nQvYP9KO12yLSVc1H7jyEiORrPA40f+isLy9XSnLcjkSxEfep5CpmR+WpNwZRVzY3\nezWFSNgIDAu92tN6hiwWI8kULveuSd6eMBurU3cCgYB+a   3+XwzNvGqfmNI21MDaR\nhiOc18tuWFTTgY7vyDCmuBzsJr0ogWEc0bHqQFHwGiAclcz6W8oFVZoKVCqqt/c/\nrmyltRNqxhETep5yvKI1rT8Zr5KKSsABMq0zVeanZ58ECLFV2kU8HNYmvMbMRRkd\nQuniHNZ+s2W+kmFRC5xqgQKBgGEFZQwqhi+I5DE5q63VKs+pmcyBVSnLFd3Z8unQ\nZ8TSaU7vovo8nEJcdNBKzJOnwiyBoHPDCz/Q8QjtwHlSa6akzhm9+KhwpN+qzVsi\nehdz5slRYzu7pEdUpc4lGJ3TfUz+zrQK6SbRaCag1IsTuhjD8gNxK1EZfwvw+42T\nAPpFAoGBAJ/sumqLpw0BlDnheda9YrVBCGAn6LCUpqdnZYgDpo5GUVyhR8xqPQEk\nBzbZ1JElbyAmMewFzb/uUUa2ONh5mkws8OMVyyky+ysNftgDAwhq+cvRLnmez8EU\ntKXOpDdPPZHDdzUNbhk8a6tV8Nn2lmUBcp9lqx4Y7XF9fy6LdjEN\n-----END RSA PRIVATE KEY-----\n", "clientid":"h1cp-test-client", "cleansession":true, "username":"", "password":"", "lastwilltopic":"1", "lastwillqos":"0", "lastwillmsg":"1", "lastwillretain":false, "keepalive":60, "publishqos":1, "publishretain":1, "publishretrylimit":1, "subscribeqos":2};
+
+2. AT+000014;MQTT_ConnectBroker,{"brokerid":1};
+
+This command initiates a connection to the MQTT broker identified by the "brokerid" parameter.
+
+3. AT+000012;MQTT_GetBroker,{"brokerid":1};
+
+This command retrieves the configuration details of the MQTT broker specified by the "brokerid" parameter.
+
+4. AT+000018;MQTT_Publish,{"brokerid":1,"topic":"subscription_topic_name","qos":"1","message":"This is the message to publish"};
+
+This command publishes a message to the specified MQTT broker, targeting the specified topic with the given quality of service (QoS) level and message content.
+
+5. AT+000016;MQTT_Subscribe,{"brokerid":1,"topic":"subscription_topic_name","qos":"1"};
+
+This command subscribes to a specific topic on the MQTT broker with the specified QoS level.
+
+6. AT+000017;MQTT_Unsubscribe,{"brokerid":1,"topic":"subscription_topic_name"};
+
+This command unsubscribes from a previously subscribed topic on the MQTT broker.
+
+7. AT+000015;MQTT_DisconnectBroker,{"brokerid":1};
+
+This command disconnects the device from the MQTT broker identified by the "brokerid" parameter.
+
+8. AT+000013;MQTT_DeleteBroker,{"brokerid":1};
+
+This command deletes the configuration of the MQTT broker identified by the "brokerid" parameter from the device.
+
+
+

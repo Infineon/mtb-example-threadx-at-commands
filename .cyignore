@@ -1,0 +1,24 @@
+# Documentation
+images
+
+libs/cJSON/.github
+libs/cJSON/fuzzing
+libs/cJSON/library_config
+libs/cJSON/tests
+libs/cJSON/cJSON_Utils.h
+libs/cJSON/cJSON_Utils.c
+libs/cJSON/test.c
+
+$(SEARCH_cJSON)/.github
+$(SEARCH_cJSON)/fuzzing
+$(SEARCH_cJSON)/library_config
+$(SEARCH_cJSON)/tests
+$(SEARCH_cJSON)/cJSON_Utils.h
+$(SEARCH_cJSON)/cJSON_Utils.c
+$(SEARCH_cJSON)/test.c
+
+# Exports, Project settings
+.mtbLaunchConfigs
+.settings
+.vscode
+
