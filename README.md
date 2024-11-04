@@ -4,7 +4,7 @@ This example demonstrates an AT command application that accepts AT command from
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-threadx-at-commands)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzk2NjIiLCJTcGVjIE51bWJlciI6IjAwMi0zOTY2MiIsIkRvYyBUaXRsZSI6IkFUIGNvbW1hbmQgYXBwbGljYXRpb24iLCJyaWQiOiJ2ZWxtdXJ1Z2FuIiwiRG9jIHZlcnNpb24iOiIxLjAuMCIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiV0lGSSJ9)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzk2NjIiLCJTcGVjIE51bWJlciI6IjAwMi0zOTY2MiIsIkRvYyBUaXRsZSI6IkFUIGNvbW1hbmQgYXBwbGljYXRpb24iLCJyaWQiOiJtaXNocmFhbWFsIiwiRG9jIHZlcnNpb24iOiIxLjEuMCIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiV0lGSSJ9)
 
 
 ## Requirements
@@ -148,7 +148,7 @@ For more details, see the [ModusToolbox&trade; tools package user guide](https:/
 
       1. Select the application project in the Project Explorer.
 
-      2. In the **Quick Panel**, scroll down, and click **\<Application Name> Program (KitProg3_MiniProg4)**.
+      2. In the **Quick Panel**, scroll down, and click **\<Application Name> Program**.
    </details>
 
 
@@ -198,6 +198,8 @@ Follow the instructions in your preferred IDE.
 
 ## Design and implementation
 
+The application uses AT command parser library to enable a host MCU to send AT commands over either UART or SDIO to exercise variety of network operations including scan, connect, disconnect etc. By Default UART is selected, to switch to SDIO add define `SDIO_HM_AT_CMD` to the makefile.
+
 ### Resources and settings
 
 **Table 1. Application resources**
@@ -232,6 +234,7 @@ Document title: *CE239662* – *AT command application*
  Version | Description of change    
  ------- | ---------------------
  1.0.0   | New code example
+ 1.1.0   | Added support for SDIO
 
 All referenced product or service names and trademarks are the property of their respective owners.
 

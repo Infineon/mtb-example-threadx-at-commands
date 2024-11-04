@@ -66,6 +66,7 @@ static at_cmd_security_def_t security_table[] =
         {"wpa2-tkip", CY_WCM_SECURITY_WPA2_TKIP_PSK},
         {"wpa2-mixed", CY_WCM_SECURITY_WPA2_MIXED_PSK},
         {"wpa3-wpa2", CY_WCM_SECURITY_WPA3_WPA2_PSK},
+        {"wpa3", CY_WCM_SECURITY_WPA3_SAE},
         {NULL, CY_WCM_SECURITY_UNKNOWN}};
 
 /******************************************************
@@ -114,6 +115,12 @@ static cy_rslt_t setup_wcm_connect_config(at_cmd_ref_app_wcm_connect_specific_t 
 
     ssid = cJSON_GetObjectItem(json, WCM_TOKEN_SSID)->valuestring;
 
+    if(strlen(ssid)>CY_WCM_MAX_SSID_LEN)
+    {
+            AT_CMD_REFAPP_LOG_MSG(("SSID too long\n"));
+            return CY_RSLT_AT_CMD_REF_APP_ERR;
+    }
+    
     memcpy(connect_config->ssid, ssid, strlen(ssid));
     connect_config->ssid_length = strlen(ssid);
 
@@ -133,11 +140,10 @@ static cy_rslt_t setup_wcm_connect_config(at_cmd_ref_app_wcm_connect_specific_t 
             return CY_RSLT_AT_CMD_REF_APP_ERR;
         }
 
-        if(strlen(cJSON_GetObjectItem(json, WCM_TOKEN_PASSWORD)->valuestring) > CY_WCM_MAX_PASSPHRASE_LEN)
+        if (strlen(cJSON_GetObjectItem(json, WCM_TOKEN_PASSWORD)->valuestring) > CY_WCM_MAX_PASSPHRASE_LEN)
         {
             AT_CMD_REFAPP_LOG_MSG(("password too long\n"));
             return CY_RSLT_AT_CMD_REF_APP_ERR;
-            
         }
 
         strcpy(connect_config->password, cJSON_GetObjectItem(json, WCM_TOKEN_PASSWORD)->valuestring);
@@ -382,7 +388,7 @@ cy_rslt_t at_cmd_refapp_process_wcm_host_msg(uint32_t cmd_id, at_cmd_msg_base_t 
         cJSON_AddNumberToObject(cjson, WCM_TOKEN_SIGNAL_STRENGTH, ap_info->signal_strength);
 
         idx = at_cmd_refapp_security_table_lookup_by_value(ap_info->security_type, security_table);
-        AT_CMD_REFAPP_LOG_MSG(("CMD_ID_AP_GET_INFO idx:%d security_type:%x\n", idx, ap_info->security_type));
+        AT_CMD_REFAPP_LOG_MSG(("CMD_ID_AP_GET_INFO idx:%d security_type:%llx\n", idx, ap_info->security_type));
 
         cJSON_AddStringToObject(cjson, WCM_TOKEN_SECURITY_TYPE, idx >= 0 ? security_table[idx].cmd_name : WCM_TOKEN_UNKNOWN);
     }
@@ -596,8 +602,6 @@ at_cmd_msg_base_t *at_cmd_refapp_wcm_process_message(at_cmd_msg_base_t *msg, at_
     at_cmd_ref_ping_ip_addr_t *ping_info = NULL;
 
     cmd_id = msg->cmd_id;
-
-    AT_CMD_REFAPP_LOG_MSG(("at_cmd_refapp_wcm_process_message: cmd_id 0x%04lx\n", cmd_id));
 
     switch (cmd_id)
     {

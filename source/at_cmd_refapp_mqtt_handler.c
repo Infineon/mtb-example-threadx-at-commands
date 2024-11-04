@@ -103,7 +103,6 @@ void at_cmd_refapp_build_mqtt_json_text_to_host(uint32_t cmd_id, uint32_t serial
     at_cmd_msg_base_t *host_resp_msg = NULL;
     cy_rslt_t result = CY_RSLT_SUCCESS;
 
-    AT_CMD_REFAPP_LOG_MSG(("%s entered cmd_id:%ld\n", __func__, cmd_id));
     switch (cmd_id)
     {
     case CMD_ID_MQTT_DEFINE_BROKER:
@@ -146,8 +145,6 @@ at_cmd_msg_base_t *at_cmd_refapp_mqtt_process_message(at_cmd_msg_base_t *msg, at
     char *response_text = NULL;
 
     memset(&item, 0, sizeof(at_cmd_ref_app_mqtt_find_item_t));
-
-    AT_CMD_REFAPP_LOG_MSG(("%s entered cmd_id:%ld\n", __func__, msg->cmd_id));
 
     switch (msg->cmd_id)
     {
@@ -331,6 +328,15 @@ at_cmd_msg_base_t *at_cmd_refapp_mqtt_process_message(at_cmd_msg_base_t *msg, at
     case CMD_ID_MQTT_SUBSCRIBE:
     {
         subscribe = (at_cmd_ref_app_mqtt_subscribe_t *)msg;
+
+        if (subscribe == NULL)
+        {
+            AT_CMD_REFAPP_LOG_MSG(("mqtt subscribe info not found"));
+            response_text = "mqtt subscribe info not found";
+            at_cmd_refapp_mqtt_set_result_string(response_text, result_str);
+            return NULL;
+        }
+
         cy_linked_list_node_t *nodeptr = NULL;
         nodeptr = at_cmd_refapp_find_broker_id(subscribe->brokerid);
         if (nodeptr == NULL)
@@ -349,10 +355,10 @@ at_cmd_msg_base_t *at_cmd_refapp_mqtt_process_message(at_cmd_msg_base_t *msg, at
             return NULL;
         }
 
-        if (subscribe == NULL)
+        if (subscribe->topic == NULL)
         {
-            AT_CMD_REFAPP_LOG_MSG(("mqtt subscribe info not found"));
-            response_text = "mqtt subscribe info not found";
+            AT_CMD_REFAPP_LOG_MSG(("MQTT Subscribe failed, topic NULL \n"));
+            response_text = "MQTT Subscribe failed, topic NULL";
             at_cmd_refapp_mqtt_set_result_string(response_text, result_str);
             return NULL;
         }
@@ -375,6 +381,15 @@ at_cmd_msg_base_t *at_cmd_refapp_mqtt_process_message(at_cmd_msg_base_t *msg, at
     case CMD_ID_MQTT_UNSUBSCRIBE:
     {
         unsubscribe = (at_cmd_ref_app_mqtt_unsubscribe_t *)msg;
+        
+        if (unsubscribe == NULL)
+        {
+            AT_CMD_REFAPP_LOG_MSG(("unsubscribe info not found"));
+            response_text = "unsubscribe info not found";
+            at_cmd_refapp_mqtt_set_result_string(response_text, result_str);
+            return NULL;
+        }
+
         cy_linked_list_node_t *nodeptr = NULL;
         nodeptr = at_cmd_refapp_find_broker_id(unsubscribe->brokerid);
         if (nodeptr == NULL)
@@ -393,10 +408,10 @@ at_cmd_msg_base_t *at_cmd_refapp_mqtt_process_message(at_cmd_msg_base_t *msg, at
             return NULL;
         }
 
-        if (unsubscribe == NULL)
+        if (unsubscribe->topic == NULL)
         {
-            AT_CMD_REFAPP_LOG_MSG(("unsubscribe info not found"));
-            response_text = "unsubscribe info not found";
+            AT_CMD_REFAPP_LOG_MSG(("MQTT UnSubscribe failed, topic NULL \n"));
+            response_text = "MQTT UnSubscribe failed, topic NULL";
             at_cmd_refapp_mqtt_set_result_string(response_text, result_str);
             return NULL;
         }
@@ -420,6 +435,14 @@ at_cmd_msg_base_t *at_cmd_refapp_mqtt_process_message(at_cmd_msg_base_t *msg, at
     {
 
         publish = (at_cmd_ref_app_mqtt_publish_t *)msg;
+
+        if (publish == NULL)
+        {
+            response_text = "mqtt publish info not found";
+            at_cmd_refapp_mqtt_set_result_string(response_text, result_str);
+            return NULL;
+        }
+
         cy_linked_list_node_t *nodeptr = NULL;
 
         nodeptr = at_cmd_refapp_find_broker_id(publish->brokerid);
@@ -439,9 +462,18 @@ at_cmd_msg_base_t *at_cmd_refapp_mqtt_process_message(at_cmd_msg_base_t *msg, at
             return NULL;
         }
 
-        if (publish == NULL)
+        if (publish->topic == NULL)
         {
-            response_text = "mqtt publish info not found";
+            AT_CMD_REFAPP_LOG_MSG(("MQTT Publish failed, topic NULL \n"));
+            response_text = "MQTT Publish failed, topic NULL";
+            at_cmd_refapp_mqtt_set_result_string(response_text, result_str);
+            return NULL;
+        }
+
+        if (publish->msg == NULL)
+        {
+            AT_CMD_REFAPP_LOG_MSG(("MQTT Publish failed, msg NULL \n"));
+            response_text = "MQTT Publish failed, msg NULL";
             at_cmd_refapp_mqtt_set_result_string(response_text, result_str);
             return NULL;
         }
@@ -556,7 +588,6 @@ cy_rslt_t at_cmd_refapp_process_mqtt_host_msg(uint32_t cmd_id, at_cmd_msg_base_t
     char *json_text = NULL;
     uint32_t len;
 
-    AT_CMD_REFAPP_LOG_MSG(("%s entered cmd_id:%ld\n", __func__, msg->cmd_id));
     /*
      * Create a JSON object to construct the output data.
      */
@@ -741,7 +772,7 @@ at_cmd_msg_base_t *at_cmd_refapp_parse_mqtt_broker_id(char *cmd_txt, uint32_t cm
     mqtt_broker_id->base.cmd_id = cmd_id;
     mqtt_broker_id->base.serial = cmd_id;
     mqtt_broker_id->brokerid = brokerid;
-    AT_CMD_REFAPP_LOG_MSG(("CMD_ID_GET_BROKER broker_id=%ld\n", mqtt_broker_id->brokerid));
+
     cJSON_Delete(json);
 
     return (at_cmd_msg_base_t *)mqtt_broker_id;
@@ -796,7 +827,7 @@ at_cmd_msg_base_t *at_cmd_refapp_parse_mqtt_subscribe(char *cmd_txt, uint32_t cm
     {
         subscribe->qos = cJSON_GetObjectItem(json, MQTT_TOKEN_QOS)->valueint;
     }
-    AT_CMD_REFAPP_LOG_MSG(("CMD_ID_MQTT_SUBSCRIBE broker_id=%ld topic:%s topic_json:%s\n", subscribe->brokerid, subscribe->topic, cJSON_GetObjectItem(json, MQTT_TOKEN_TOPIC)->valuestring));
+
     cJSON_Delete(json);
     return (at_cmd_msg_base_t *)subscribe;
 }
@@ -883,7 +914,6 @@ at_cmd_msg_base_t *at_cmd_refapp_parse_mqtt_define_server(char *cmd_txt, uint32_
         AT_CMD_REFAPP_LOG_MSG(("error MQTT define server setup\n"));
         return NULL;
     }
-    AT_CMD_REFAPP_LOG_MSG(("mqtt_server host %s port %d \n", server_config->hostname, server_config->port));
 
     if ((server_config->username != NULL) && (server_config->clientid != NULL) && (server_config->password != NULL))
     {
@@ -938,7 +968,6 @@ at_cmd_msg_base_t *at_cmd_refapp_parse_mqtt_unsubscribe(char *cmd_txt, uint32_t 
         strcpy(unsubscribe->topic, cJSON_GetObjectItem(json, MQTT_TOKEN_TOPIC)->valuestring);
     }
     cJSON_Delete(json);
-    AT_CMD_REFAPP_LOG_MSG(("CMD_ID_MQTT_UNSUBSCRIBE broker_id=%ld\n", unsubscribe->brokerid));
 
     return (at_cmd_msg_base_t *)unsubscribe;
 }
@@ -1003,7 +1032,7 @@ at_cmd_msg_base_t *at_cmd_refapp_parse_mqtt_publish(char *cmd_txt, uint32_t cmd_
         }
         strcpy(publish->msg, cJSON_GetObjectItem(json, MQTT_TOKEN_MSG)->valuestring);
     }
-    AT_CMD_REFAPP_LOG_MSG(("CMD_ID_MQTT_PUBLISH broker_id=%ld\n", publish->brokerid));
+
     cJSON_Delete(json);
     return (at_cmd_msg_base_t *)publish;
 }
@@ -1012,8 +1041,6 @@ at_cmd_msg_base_t *at_cmd_refapp_parse_mqtt_cmd(uint32_t cmd_id, uint32_t serial
 {
     at_cmd_msg_base_t *msg = NULL;
     char *cmd_txt = cmd;
-
-    AT_CMD_REFAPP_LOG_MSG(("%s entered cmd_id:%ld\n", __func__, cmd_id));
 
     switch (cmd_id)
     {
@@ -1347,7 +1374,7 @@ static void at_cmd_refapp_create_mqtt_broker_info(at_cmd_ref_app_mqtt_broker_inf
         AT_CMD_REFAPP_LOG_MSG(("memory error\n"));
         return;
     }
-    memset(mqtt_server->hostname, 0, sizeof(strlen(server_config->hostname) + 1));
+    memset(mqtt_server->hostname, 0, (strlen(server_config->hostname)+1));
     strcpy(mqtt_server->hostname, server_config->hostname);
 
     AT_CMD_REFAPP_LOG_MSG(("mqtt_server->hostname:%p\n", mqtt_server->hostname));

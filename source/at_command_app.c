@@ -64,6 +64,10 @@
 /* Standard C header files */
 #include <inttypes.h>
 
+#if defined(SDIO_HM_AT_CMD)
+#include "sdio_at_cmd_support.h"
+#endif
+
 /*******************************************************************************
  * Function Prototypes
  ********************************************************************************/
@@ -72,7 +76,7 @@ static at_cmd_msg_base_t *cmd_callback_wcm_cmd(uint32_t cmd_id, uint32_t serial,
 {
 
     at_cmd_msg_base_t *at_cmd_msg;
-    AT_CMD_REFAPP_LOG_MSG(("cmd_callback_wcm_cmd: cmd_id %lu, serial %lu, args %s\n", cmd_id, serial, (char *)cmd_args));
+    //  AT_CMD_REFAPP_LOG_MSG(("cmd_callback_wcm_cmd: cmd_id %lu, serial %lu, args %s\n", cmd_id, serial, (char *)cmd_args));
     at_cmd_msg = at_cmd_refapp_parse_wcm_cmd(cmd_id, serial, cmd_args_len, (char *)cmd_args);
     if (at_cmd_msg == NULL)
     {
@@ -84,7 +88,7 @@ static at_cmd_msg_base_t *cmd_callback_wcm_cmd(uint32_t cmd_id, uint32_t serial,
 static at_cmd_msg_base_t *cmd_callback_mqtt_cmd(uint32_t cmd_id, uint32_t serial, uint32_t cmd_args_len, uint8_t *cmd_args)
 {
     at_cmd_msg_base_t *at_cmd_msg;
-    AT_CMD_REFAPP_LOG_MSG(("cmd_callback_mqtt_cmd: cmd_id %lu, serial %lu\n", cmd_id, serial));
+    //  AT_CMD_REFAPP_LOG_MSG(("cmd_callback_mqtt_cmd: cmd_id %lu, serial %lu\n", cmd_id, serial));
     at_cmd_msg = at_cmd_refapp_parse_mqtt_cmd(cmd_id, serial, cmd_args_len, (char *)cmd_args);
     if (at_cmd_msg == NULL)
     {
@@ -124,6 +128,9 @@ at_cmd_result_data_t result_str;
 
 bool at_cmd_refapp_transport_is_data_ready(void *opaque)
 {
+#if defined(SDIO_HM_AT_CMD)
+    return sdio_cmd_at_is_data_ready();
+#else
     volatile bool is_transport_ready = false;
     uint32_t num_bytes = 0;
     num_bytes = cyhal_uart_readable(&cy_retarget_io_uart_obj);
@@ -131,6 +138,7 @@ bool at_cmd_refapp_transport_is_data_ready(void *opaque)
         is_transport_ready = true;
 
     return is_transport_ready;
+#endif /* AT_CMD_OVER_SDIO */
 }
 
 /**
@@ -138,12 +146,15 @@ bool at_cmd_refapp_transport_is_data_ready(void *opaque)
  */
 static uint32_t transport_read_data(uint8_t *buffer, uint32_t size, void *opaque)
 {
-
+#if defined(SDIO_HM_AT_CMD)
+    return sdio_cmd_at_read_data(buffer, size);
+#else
     size_t len = cyhal_uart_readable(&cy_retarget_io_uart_obj);
 
     cyhal_uart_read(&cy_retarget_io_uart_obj, buffer, &len);
 
     return (uint32_t)len;
+#endif /* AT_CMD_OVER_SDIO */
 }
 
 /**
@@ -151,13 +162,16 @@ static uint32_t transport_read_data(uint8_t *buffer, uint32_t size, void *opaque
  */
 static cy_rslt_t transport_write_data(uint8_t *buffer, uint32_t length, void *opaque)
 {
-
+#if defined(SDIO_HM_AT_CMD)
+    return sdio_cmd_at_write_data(buffer, length);
+#else
     for (int i = 0; i < length; i++)
     {
         cyhal_uart_putc(&cy_retarget_io_uart_obj, buffer[i]);
     }
 
     return CY_RSLT_SUCCESS;
+#endif /* AT_CMD_OVER_SDIO */
 }
 
 /*******************************************************************************
@@ -244,12 +258,12 @@ void client_task(cy_thread_arg_t arg)
             case CMD_ID_GET_IPv4_ADDRESS:
             case CMD_ID_PING:
                 at_cmd_refapp_build_wcm_json_text_to_host(cmd->cmd_id, cmd->serial, cmd, &result_str);
-                transport_write_data(((uint8_t *)result_str.result_text), ((uint32_t)strlen(result_str.result_text)), NULL);
+                at_cmd_parser_send_cmd_response(cmd->serial, result_str.result_status, result_str.result_text);
                 break;
             case CMD_ID_WCM_NETWORK_CHANGE_NOTIFICATION:
             case CMD_ID_HOST_WCM_SCAN_INFO:
                 at_cmd_refapp_build_wcm_json_text_to_host(cmd->cmd_id, cmd->serial, cmd, &result_str);
-                transport_write_data(((uint8_t *)result_str.result_text), ((uint32_t)strlen(result_str.result_text)), NULL);
+                at_cmd_parser_send_cmd_response(cmd->serial, result_str.result_status, result_str.result_text);
                 break;
             case CMD_ID_MQTT_DEFINE_BROKER:
             case CMD_ID_MQTT_GET_BROKER:
